@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@fortawesome/fontawesome-pro": "^6.2.1",
+    "slick-carousel": "^1.8.1"
+  }
+}

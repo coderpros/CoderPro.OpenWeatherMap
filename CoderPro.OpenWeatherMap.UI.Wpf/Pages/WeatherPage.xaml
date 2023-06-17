@@ -1,0 +1,354 @@
+﻿<Page x:Class="CoderPro.OpenWeatherMap.UI.Wpf.Pages.WeatherPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:collections="clr-namespace:System.Collections;assembly=System.Runtime"
+      xmlns:converters="clr-namespace:CoderPro.OpenWeatherMap.UI.Wpf.Converters"
+      mc:Ignorable="d" d:DesignWidth="800" 
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" FontFamily="{DynamicResource MaterialDesignFont}"
+      Title="WeatherPage" Loaded="Page_Loaded" Height="585">
+    <Page.Resources>
+        <converters:WeatherIconToImageSourceConverter x:Key="ImageConverter" />
+        <converters:WindConverter x:Key="WindConverter" />
+        <converters:CapitalizationConverter x:Key="CapitalizationConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <Style x:Key="DefaultHorizontalScrollViewer" TargetType="ScrollViewer">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollViewer">
+                        <Border CornerRadius="150">
+                            <ScrollViewer Background="{TemplateBinding Background}" 
+                                          VerticalScrollBarVisibility="Hidden" 
+                                          HorizontalScrollBarVisibility="Auto">
+                                <ScrollViewer.Content>
+                                    <ContentPresenter Content="{TemplateBinding Content}" Margin="5" />
+                                </ScrollViewer.Content>
+                            </ScrollViewer>
+                        </Border>
+                        <ControlTemplate.Resources>
+                            <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MaterialDesignScrollBar}">
+                                <Setter Property="materialDesign:ScrollBarAssist.ThumbCornerRadius" Value="5"/>
+                                <Setter Property="materialDesign:ScrollBarAssist.ButtonsVisibility" Value="Visible"/>
+                                <Setter Property="materialDesign:ScrollBarAssist.ThumbWidth" Value="5"/>
+                                <Setter Property="materialDesign:ScrollBarAssist.ThumbHeight" Value="15"/>
+                                <Setter Property="materialDesign:ScrollViewerAssist.CornerRectangleVisibility" Value="Hidden" />
+                            </Style>
+                        </ControlTemplate.Resources>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="LocationTextBox" materialDesign:HintAssist.Hint="City, State OR City, Province, Country, OR Post Code" Width="150" HorizontalAlignment="Left" />
+
+                <Button Grid.Column="0" Grid.Row="1" x:Name="SearchButton" IsDefault="True"
+                        BorderBrush="{DynamicResource MaterialDesignDivider}" Style="{StaticResource MaterialDesignFlatButton}"
+                        Width="30" Height="30" 
+                        VerticalAlignment="Top" HorizontalAlignment="Right" HorizontalContentAlignment="Center" Click="SearchButton_Click">
+                    <materialDesign:PackIcon Kind="Search"  VerticalAlignment="Top" HorizontalAlignment="Center" Width="20" Margin="-10 0 -10 0" />
+                </Button>
+                <ToggleButton Name="AutoRefreshButton" IsChecked="False" Width="30"
+                              MouseRightButtonUp="AutoRefreshButton_OnMouseRightButtonUp">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="False">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <materialDesign:PackIcon Kind="AutoRenew"  VerticalAlignment="Top" HorizontalAlignment="Center" Width="20" Margin="-5 0 -10 0" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <materialDesign:PackIcon Kind="AutoRenewOff"  VerticalAlignment="Top" HorizontalAlignment="Center" Width="20" Margin="-5 0 -10 0" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
+
+                <RadioButton Name="FahrenheitRadioButton" Margin="10,5,0,0" GroupName="TemperatureUnit" Tag="Fahrenheit" Checked="TemperatureUnit_CheckChange" >
+                    <materialDesign:PackIcon Kind="TemperatureFahrenheit"  VerticalAlignment="Top" HorizontalAlignment="Center" Width="20" Margin="-5 0 -10 0" />
+                </RadioButton>
+                <RadioButton Name="CelsiusRadioButton" Margin="10,5,0,0" GroupName="TemperatureUnit" Tag="Celsius" Checked="TemperatureUnit_CheckChange">
+                    <materialDesign:PackIcon Kind="TemperatureCelsius"  VerticalAlignment="Top" HorizontalAlignment="Center" Width="20" Margin="-5 0 -10 0" />
+                </RadioButton>
+                <RadioButton Name="KelvinRadioButton" Margin="10,5,0,0" GroupName="TemperatureUnit" Tag="Kelvin" Checked="TemperatureUnit_CheckChange">
+                    <materialDesign:PackIcon Kind="TemperatureKelvin"  VerticalAlignment="Top" HorizontalAlignment="Center" Width="20" Margin="-8 0 -10 0" />
+                </RadioButton>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock x:Name="LocationTextBlock" FontSize="40" VerticalAlignment="Top" HorizontalAlignment="Left">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat=" {0}, {1}">
+                            <Binding Path="CurrentWeather.Name" />
+                            <Binding Path="CurrentWeather.Sys.Country" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom">
+                    <Label Content="Sunrise:" />
+                    <TextBlock Text="{Binding CurrentWeather.Sys.Sunrise, StringFormat=' {0:hh:mm tt}'}" 
+                               Margin="50 -20 0 0" VerticalAlignment="Center" />
+                    <Label Content="Sunset:" />
+                    <TextBlock Text="{Binding CurrentWeather.Sys.Sunset, StringFormat=' {0:hh:mm tt}'}" 
+                               Margin="50 -20 0 0" VerticalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Image Name="CurrentWeatherImage" Source="{Binding CurrentWeather.WeatherList[0].Icon, Converter={StaticResource ImageConverter}}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentWeather.WeatherList[0].Description, Converter={StaticResource CapitalizationConverter}}" />
+            </StackPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Vertical" Grid.Column="0">
+                    <TextBlock x:Name="HighLowTextBlock">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat=" {0:N0}° | {1:N0}°">
+                                <Binding x:Name="MaximumTemperatureBinding" Path="CurrentWeather.Main.Temperature.FahrenheitMaximum" />
+                                <Binding x:Name="MinimumTemperatureBinding" Path="CurrentWeather.Main.Temperature.FahrenheitMinimum" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock x:Name="CurrentTemperatureTextBlock" FontSize="20"
+                       Text="{Binding CurrentWeather.Main.Temperature.FahrenheitCurrent, StringFormat=' {0:N0} °F'}" />
+                    <Label Content="Feels Like:" />
+                    <TextBlock x:Name="CurrentFeelsLikeTemperatureTextBlock"
+                           Text="{Binding CurrentWeather.Main.Temperature.FahrenheitFeelsLike, StringFormat=' {0:N0} °F'}" />
+                    <StackPanel Name="AirPollutionStackPanel" Orientation="Horizontal">
+                        <Label Content="Air Quality:" />
+                        <TextBlock Text="{Binding CurrentAirPollution.PollutionList[0].Main.AirQualityIndex}" VerticalAlignment="Center">
+                            <TextBlock.ToolTip>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="Carbon Monoxide: {0} μg/m³&#x0a;Nitrogen Monoxide: {1} μg/m³&#x0a;Nitrogen Dioxide: {2} μg/m³&#x0a;Ozone: {3} μg/m³&#x0a;Sulfur Dioxide: {4} μg/m³&#x0a;Fine Particulate Matter: {5} μg/m³&#x0a;Coarse Particulate Matter: {6} μg/m³&#x0a;Ammonia: {7} μg/m³">
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.CO" />
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.NO" />
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.NO2" />
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.O3" />
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.SO2" />
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.PM25" />
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.PM10" />
+                                            <Binding Path="CurrentAirPollution.PollutionList[0].Components.NH3" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </StackPanel>
+                    <Label Content="Last Updated:" FontWeight="Bold" />
+                    <TextBlock x:Name="LastUpdated" 
+                               FontWeight="Bold" Margin="5 0 0 0" 
+                               ToolTip="Last updated at source"
+                               Text="{Binding CurrentWeather.Date, StringFormat=' {0:MM/dd/yyyy HH:mm}'}" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="1">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Visibility:" />
+                        <TextBlock VerticalAlignment="Center"
+                               Text="{Binding CurrentWeather.Visibility, StringFormat=' {0:N0} m'}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Pressure:" />
+                        <TextBlock VerticalAlignment="Center"
+                               Text="{Binding CurrentWeather.Main.Pressure, StringFormat=' {0:N0} hPa'}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Humidity:" />
+                        <TextBlock VerticalAlignment="Center"
+                        Text="{Binding CurrentWeather.Main.Humidity, StringFormat=' {0}%'}" />
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Column="2">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Wind:" />
+                        <Image Source="/Resources/arrow-up.png" Width="64">
+                            <Image.ToolTip>
+                                <MultiBinding Converter="{StaticResource WindConverter }">
+                                    <Binding Path="CurrentWeather.Wind.Direction" />
+                                    <Binding Path="CurrentWeather.Wind.Degree" />
+                                </MultiBinding>
+                            </Image.ToolTip>
+                            <Image.RenderTransform>
+                                <RotateTransform Angle="{Binding CurrentWeather.Wind.Degree}" CenterY="25" CenterX="35" />
+                            </Image.RenderTransform>
+                        </Image>
+                        <TextBlock Name="CurrentWindSpeed" VerticalAlignment="Center" Text="{Binding CurrentWeather.Wind.SpeedFeetPerSecond, StringFormat=' at {0:f2} ft/s'}" Margin="10 0 0 0" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Clouds:" />
+                        <TextBlock VerticalAlignment="Center"
+                               Text="{Binding CurrentWeather.Clouds.All, StringFormat=' {0}%'}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Rain:" />
+                        <TextBlock VerticalAlignment="Center"
+                               Text="{Binding CurrentWeather.Rain.H3, StringFormat=' {0} mm'}" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        <TabControl Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="10,0,0,21">
+            <TabItem Header="Five Day Forecast" ToolTip="5 Day / 3 Hour Forecast" VerticalAlignment="Top">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" 
+                              VerticalScrollBarVisibility="Hidden" 
+                              PanningMode="HorizontalOnly"
+                              Style="{StaticResource DefaultHorizontalScrollViewer}" Margin="0,0,0,24">
+                    <ItemsControl ItemsSource="{Binding Forecast5.ForecastList}" VerticalAlignment="Top" Width="Auto">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="0">
+                                            <Image Name="CurrentWeatherImage" Source="{Binding WeatherList[0].Icon, Converter={StaticResource ImageConverter}}" />
+                                            <StackPanel Orientation="Vertical">
+                                                <TextBlock Text="{Binding Date, StringFormat=' {0:MM/dd/yyyy HH:mm}'}" FontWeight="Bold" Padding="0 0 10 0"/>
+                                                <TextBlock VerticalAlignment="Center" Text="{Binding WeatherList[0].Description, Converter={StaticResource CapitalizationConverter }}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="1">
+                                            <Image Source="/Resources/arrow-up.png" Width="64">
+                                                <Image.ToolTip>
+                                                    <MultiBinding Converter="{StaticResource WindConverter }">
+                                                        <Binding Path="Wind.Direction" />
+                                                        <Binding Path="Wind.Degree" />
+                                                    </MultiBinding>
+                                                </Image.ToolTip>
+                                                <Image.RenderTransform>
+                                                    <RotateTransform Angle="{Binding Wind.Degree}" CenterY="30" CenterX="36" />
+                                                </Image.RenderTransform>
+                                            </Image>
+                                            <!-- TODO: Update to use Default UoM from AppSettings -->
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Visibility="{Binding Path=IsChecked, ElementName=FahrenheitRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat=" at {0:f2} ft/s">
+                                                        <Binding Path="Wind.SpeedFeetPerSecond" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Visibility="{Binding Path=IsChecked, ElementName=CelsiusRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat=" at {0:f2} m/s">
+                                                        <Binding Path="Wind.SpeedMetersPerSecond" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Visibility="{Binding Path=IsChecked, ElementName=KelvinRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat=" at {0:f2} ft/s">
+                                                        <Binding Path="Wind.SpeedFeetPerSecond" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="2">
+                                            <TextBlock FontWeight="Bold"
+                                                       Text="{Binding Main.Temperature.FahrenheitCurrent, StringFormat=' {0:N0} °F'}"
+                                                       Visibility="{Binding Path=IsChecked, ElementName=FahrenheitRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock.ToolTip>
+                                                    <TextBlock Text="{Binding Main.Temperature.FahrenheitFeelsLike, StringFormat=' Feels Like: {0:N0} °F'}" 
+                                                               Visibility="{Binding Path=IsChecked, ElementName=FahrenheitRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                </TextBlock.ToolTip>
+                                            </TextBlock>
+                                            <TextBlock FontWeight="Bold"
+                                                       Text="{Binding Main.Temperature.CelsiusCurrent, StringFormat=' {0:N0} °C'}"
+                                                       Visibility="{Binding Path=IsChecked, ElementName=CelsiusRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock.ToolTip>
+                                                    <TextBlock Text="{Binding Main.Temperature.CelsiusFeelsLike, StringFormat=' Feels Like: {0:N0} °C', Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                </TextBlock.ToolTip>
+                                            </TextBlock>
+                                            <TextBlock FontWeight="Bold"
+                                                       Text="{Binding Main.Temperature.KelvinCurrent, StringFormat=' {0:N0} K'}"
+                                                       Visibility="{Binding Path=IsChecked, ElementName=KelvinRadioButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock.ToolTip>
+                                                    <TextBlock Text="{Binding Main.Temperature.KelvinFeelsLike, StringFormat=' Feels Like: {0:N0} K', Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                </TextBlock.ToolTip>
+                                            </TextBlock>
+                                            <Label Content="Visibility:" />
+                                            <TextBlock Text="{Binding Visibility, StringFormat=' {0:N0} m'}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="3">
+                                            <Label Content="Humidity:" />
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Text="{Binding Main.Humidity, StringFormat=' {0}%'}" />
+                                            <Label Content="Clouds:" />
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Text="{Binding Clouds.All, StringFormat=' {0}%'}" />
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Grid.Row="4">
+                                            <Label Content="Pressure:" />
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Text="{Binding Main.Pressure, StringFormat=' {0:N0} hPa'}"/>
+                                            <Label Content="Rain:" />
+                                            <TextBlock VerticalAlignment="Center"
+                                                       Text="{Binding Rain.H3, StringFormat=' {0} mm'}"/>
+                                        </StackPanel>
+                                        <StackPanel Name="AirPollutionForecastStackPanel" Orientation="Horizontal" Grid.Row="5">
+                                            <Label Content="Air Quality:" />
+                                            <TextBlock Text="{Binding Pollution.Main.AirQualityIndex}" VerticalAlignment="Center">
+                                                <TextBlock.ToolTip>
+                                                    <TextBlock>
+                                                        <TextBlock.Text>
+                                                            <MultiBinding StringFormat="Carbon Monoxide: {0} μg/m³&#x0a;Nitrogen Monoxide: {1} μg/m³&#x0a;Nitrogen Dioxide: {2} μg/m³&#x0a;Ozone: {3} μg/m³&#x0a;Sulfur Dioxide: {4} μg/m³&#x0a;Fine Particulate Matter: {5} μg/m³&#x0a;Coarse Particulate Matter: {6} μg/m³&#x0a;Ammonia: {7} μg/m³">
+                                                                <Binding Path="Pollution.Components.CO" />
+                                                                <Binding Path="Pollution.Components.NO" />
+                                                                <Binding Path="Pollution.Components.NO2" />
+                                                                <Binding Path="Pollution.Components.O3" />
+                                                                <Binding Path="Pollution.Components.SO2" />
+                                                                <Binding Path="Pollution.Components.PM25" />
+                                                                <Binding Path="Pollution.Components.PM10" />
+                                                                <Binding Path="Pollution.Components.NH3" />
+                                                            </MultiBinding>
+                                                        </TextBlock.Text>
+                                                    </TextBlock>
+                                                </TextBlock.ToolTip>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Page>

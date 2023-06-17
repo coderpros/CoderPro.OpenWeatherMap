@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>OpenWeatherMap API Wrapper</Title>
+    <Authors>Brandon Osborne</Authors>
+    <Company>coderPro.net</Company>
+    <Copyright>Copyright 2023 coderPro.net. All rights reserved.</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://coderpro.net/products/openweathermap-api-library</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>weather;openweathermap;c#;.net6;library;wrapper;weather-api;air-pollution;weather-forecast;s-sharp-library;current-weather;geolocation</PackageTags>
+    
+    <RepositoryUrl>https://github.com/coderpros/CoderPro.OpenWeatherMap</RepositoryUrl>
+    <Description>The most complete and modern library written for the OpenWeather API in .Net. This library retrieves the JSON from the OpenWeatherMap API and serializes them into objects. All of the free textual APIs are supported. We have planned support for the paid and mapping APIs also.</Description>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetTopologySuite" Version="2.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

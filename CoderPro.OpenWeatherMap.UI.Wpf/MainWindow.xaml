@@ -1,0 +1,49 @@
+﻿<Window x:Class="CoderPro.OpenWeatherMap.UI.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}" Background="Transparent" FontFamily="{DynamicResource MaterialDesignFont}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        
+        AllowsTransparency="True"
+        Title="coderPro Simplify"
+        ShowInTaskbar="True" Visibility="Hidden"
+        Height="740" Width="900" Opacity="1" Loaded="Window_Loaded">
+
+    <materialDesign:Card UniformCornerRadius="15" Background="{DynamicResource MaterialDesignPaper}" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth4">
+        <materialDesign:DialogHost CloseOnClickAway="True" x:Name="DialogHost">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="125" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Image x:Name="LogoImage" HorizontalAlignment="Left" Margin="30,19,0,0" VerticalAlignment="Top" Source="/Resources/coderPro_blue_250w.png" Width="100" Grid.Row="0"/>
+                <StackPanel Margin="0,10,0,0" Grid.Row="0">
+                    <materialDesign:PopupBox HorizontalAlignment="Right" Margin="0 20 20 0" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False" Height="25">
+                        <StackPanel>
+                            <StackPanel Margin="16 10 0 6" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock  VerticalAlignment="Center" Text="Dark Mode" />
+                                <ToggleButton Cursor="Hand" ToolTip="Enable Dark Mode" Margin="12 0 8 0" x:Name="ToggleThemeButton" IsChecked="{Binding App.Me.IsDarkTheme, Mode=OneWay}" Click="ToggleThemeButton_Click" />
+                            </StackPanel>
+
+                            <Button x:Name="ExitButton" ToolTip="Close Application" Content="Exit Application" Click="ExitButton_Click" />
+                        </StackPanel>
+                    </materialDesign:PopupBox>
+                </StackPanel>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0 0 0 10" 
+                              materialDesign:ScrollViewerAssist.BubbleVerticalScroll="True" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True" materialDesign:ScrollViewerAssist.CornerRectangleVisibility="Hidden">
+                    <Frame x:Name="MainFrame"
+                           x:FieldModifier="internal"
+                           NavigationUIVisibility="Hidden"/>
+                </ScrollViewer>
+            </Grid>
+        </materialDesign:DialogHost>
+    </materialDesign:Card>
+</Window>
