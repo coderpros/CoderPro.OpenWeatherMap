@@ -30,12 +30,12 @@
 ## Overview
 
 The most complete and modern library written for the OpenWeather API in .Net. This library retrieves the JSON from the OpenWeatherMap API and serializes them into objects. All of the
-free textual APIs are supported. We have planned support for the paid and mapping APIs also. See the roadmap for more information.
+free textual APIs are supported. We have planned support for the paid and mapping APIs, also. See the roadmap for more information.
 
 ## Clients
 - AirPollutionClient - Current and historical pollution conditions. See OpenWeather [API Doc](https://openweathermap.org/api/air-pollution) for more information.
 - CurrentWeatherClient - Current weather conditions. See OpenWeather [API Doc](https://openweathermap.org/current) for more information.
-- FiveDayForecastClient - Up to five days of three hour forecasts. See OpenWeather [API Doc](https://openweathermap.org/forecast5) for more information.
+- FiveDayForecastClient - Up to five days of three-hour forecasts. See OpenWeather [API Doc](https://openweathermap.org/forecast5) for more information.
 - GeocodingClient - Full support for geocoding by location name, post/zip code, and reverse geocoding. See OpenWeather [API Doc](https://openweathermap.org/api/geocoding-api) for more information.
 
 ## Installing
@@ -55,7 +55,7 @@ Install-Package CoderPro.OpenWeatherMap.Wrapper
 ## Example Usage
 
 ```csharp
-var openWeatherClient = new CoderPro.OpenWeatherMap.Wrapper.CurrentWeatherClient("my open weather api key");
+var openWeatherClient = new CoderPro.OpenWeatherMap.Wrapper.CurrentWeatherClient("my open weather API key");
 
 // Use async version wherever possible.
 var query = await openWeatherAPI.QueryAsync("city/location");
@@ -63,11 +63,11 @@ var query = await openWeatherAPI.QueryAsync("city/location");
 // or non-async version if needed for legacy code
 var query = openWeatherAPI.Query("city/location");
 
-Console.WriteLine($"The temperature in {query.Name}, {query.Sys.Country} is currently {query.Main.Temperature.FahrenheitCurrent} °F");
+Console.WriteLine($"The temperature in {query.Name}, {query.Sys.Country} is currently {query.Main.Temperature.FahrenheitCurrent} Â°F");
 ```
 
 # Demo Applications
-A demo .Net 6 Windows Presentation Framework (WPF) application is bundled in this repo.
+A demo .Net 6 Windows Presentation Framework (WPF) application is bundled in this repo. [View here](https://github.com/coderpros/CoderPro.OpenWeatherMap/tree/master/CoderPro.OpenWeatherMap.Wrapper)
 
 ## Roadmap
 | Feature | Version | Release Date |
@@ -80,5 +80,5 @@ A demo .Net 6 Windows Presentation Framework (WPF) application is bundled in thi
 | Weather station API | 2.2.0 | 2023/10/08 |
 
 ## Change Log
-- 2023/06/08
-  - Initial checkin
+- 2023/06/17
+  - Initial commit
